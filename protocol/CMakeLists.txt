@@ -3,10 +3,6 @@ project(Lydia_Protocol)
 
 set(CMAKE_CXX_STANDARD 20)
 
-# add binproto
-set(BINPROTO_BUILD_EXAMPLES OFF)
-add_subdirectory(vendor/binproto)
-
 add_library(lydia-protocol
 	src/messages/ConnectMessage.cpp
 )
