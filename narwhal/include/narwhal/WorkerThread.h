@@ -62,7 +62,7 @@ namespace narwhal {
 		 *
 		 * \param[in] data Data to push into.
 	`	 */
-		void PushData(std::shared_ptr<BaseData>&& data) {
+		void PushData(std::shared_ptr<BaseData> data) {
 			std::unique_lock<std::mutex> lk(mutex);
 			data_queue.push_back(data);
 			cond.notify_one();
@@ -113,7 +113,7 @@ namespace narwhal {
 		/**
 		 * The type erased processor function object.
 		 */
-		std::function<bool(std::shared_ptr<BaseData>&&)> processor;
+		std::function<bool(std::shared_ptr<BaseData>)> processor;
 
 		// TODO: We might need more mutexes?
 
