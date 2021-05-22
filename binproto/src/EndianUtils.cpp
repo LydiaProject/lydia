@@ -21,12 +21,12 @@ namespace binproto::internal {
 
 	template <class T>
 	constexpr T& PtrAs(void* ptr) {
-		return *(T*)ptr;
+		return *static_cast<T*>(ptr);
 	}
 
 	template <class T>
 	constexpr const T& PtrAs(const void* ptr) {
-		return *(T*)ptr;
+		return *static_cast<const T*>(ptr);
 	}
 
 	template <>
