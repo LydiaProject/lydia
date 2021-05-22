@@ -1,7 +1,5 @@
 set(CMAKE_CXX_STANDARD 20)
 
-option(BINPROTO_BUILD_EXAMPLES "Build BinProto examples" ON)
-
 add_library(binproto
 		EndianUtils.cpp
 		BufferReader.cpp
