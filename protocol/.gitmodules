@@ -1,0 +1,4 @@
+[submodule "vendor/binproto"]
+	path = vendor/binproto
+	url = https://github.com/modeco80/binproto.git
+	branch = release/1.0
