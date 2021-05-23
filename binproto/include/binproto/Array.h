@@ -25,7 +25,7 @@ namespace binproto {
 		}
 
 		void Write(binproto::BufferWriter& writer) const {
-			writer.WriteLength(array_.size());
+			writer.WriteUint32(static_cast<std::uint32_t>(array_.size()));
 
 			for(auto& elem : array_)
 				elem.Write(writer);
@@ -38,6 +38,22 @@ namespace binproto {
 	   private:
 		std::vector<T> array_;
 	};
+
+
+	/**
+	 * A generic array of bytes (wrapping over ReadBytes() basically)
+	 */
+	struct ByteArray {
+
+		std::vector<std::uint8_t> GetUnderlying();
+
+		bool Read(binproto::BufferReader& reader);
+		void Write(binproto::BufferWriter& writer) const;
+
+	   private:
+		std::vector<std::uint8_t> data;
+	};
+
 } // namespace binproto
 
 #endif //BINPROTO_OPTIONAL_H

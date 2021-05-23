@@ -4,6 +4,9 @@
 #include <binproto/BufferReader.h>
 #include <binproto/BufferWriter.h>
 
+#include <binproto/Optional.h>
+#include <binproto/Array.h>
+
 namespace lydia::messages {
 
 	//TODO: seperate .cpp TU for VMDescription and VMReference
@@ -22,7 +25,7 @@ namespace lydia::messages {
 		/**
 		 * A longer description.
 		 *
-		 * Example: "Production VM - 10.102.20.1 (win7.lydia.local)"
+		 * Example: "Windows 7 Professional VM for everyone to use."
 		 */
 		std::string description;
 
@@ -45,9 +48,9 @@ namespace lydia::messages {
 		} hypervisor;
 
 		/**
-		 * How many VCPUs are configured for the guest.
+		 * How many vCPUs are configured for the guest.
 		 */
-		std::uint8_t vcpu_count;
+		std::uint8_t VCPUCount;
 
 		/**
 		 * RAM size in bytes. The client will do unit conversion to the best unit for this.
@@ -81,8 +84,8 @@ namespace lydia::messages {
 			name = reader.ReadString();
 			description = reader.ReadString();
 			motd = reader.ReadString();
-			hypervisor = (Hypervisor)reader.ReadByte();
-			vcpu_count = reader.ReadByte();
+			hypervisor = static_cast<Hypervisor>(reader.ReadByte());
+			VCPUCount = reader.ReadByte();
 
 			// possible maybedo: calculate best unit here?? idk
 			RamSize = reader.ReadUint64();
@@ -99,8 +102,8 @@ namespace lydia::messages {
 			writer.WriteString(name);
 			writer.WriteString(description);
 			writer.WriteString(motd);
-			writer.WriteByte((std::uint8_t)hypervisor);
-			writer.WriteByte(vcpu_count);
+			writer.WriteByte(static_cast<std::uint8_t>(hypervisor));
+			writer.WriteByte(VCPUCount);
 			writer.WriteUint64(RamSize);
 			writer.WriteUint64(DiskSize);
 			writer.WriteByte(Legacy);
@@ -120,39 +123,24 @@ namespace lydia::messages {
 		std::string id;
 
 		/**
-		 * If this reference has a attached description,
-		 * due to an update.
+		 * VM description.
 		 */
-		bool has_description = false;
-
-		/**
-		 * If the reference has a preview,
-		 * this is true.
-		 */
-		bool has_preview = false;
-
-		/**
-		 * VM description. Only valid if has_description is true.
-		 */
-		VMDescription description;
+		binproto::Optional<VMDescription> description;
 
 		/**
 		 * Preview image in WebP format,
-		 * at 200x200. Only transmitted if has_preview == true.
+		 * at 200x200.
 		 */
-		std::vector<std::uint8_t> preview_image;
+		binproto::Optional<binproto::ByteArray> preview_image;
 
 		bool Read(binproto::BufferReader& reader) {
 			id = reader.ReadString();
-			has_description = reader.ReadByte();
-			has_preview = reader.ReadByte();
 
-			if(has_description)
-				if(!description.Read(reader))
+			if(!description.Read(reader))
 					return false;
 
-			if(has_preview)
-				preview_image = reader.ReadBytes();
+			if(!preview_image.Read(reader))
+				return false;
 
 			return true;
 		}
@@ -160,21 +148,8 @@ namespace lydia::messages {
 		void Write(binproto::BufferWriter& writer) const  {
 			writer.WriteString(id);
 
-			// a little janky but hey
-			writer.WriteByte(has_description);
-
-			if(preview_image.empty())
-				writer.WriteByte(false);
-			else
-				writer.WriteByte(true);
-
-			// Write the name if we need to.
-			if(has_description)
-				description.Write(writer);
-
-			// Write the preview image if we need to.
-			if(!preview_image.empty())
-				writer.WriteBytes(preview_image);
+			description.Write(writer);
+			preview_image.Write(writer);
 		}
 
 	};
