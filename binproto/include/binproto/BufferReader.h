@@ -44,8 +44,10 @@ namespace binproto {
 
 		/**
 		 * Read length, while bounds checking that value from our buffer
+		 *
+		 * \param[in] Individual element size.
 		 */
-		LengthType ReadLength();
+		LengthType ReadLength(std::size_t elem_size = sizeof(std::uint8_t));
 
 		//float ReadFloat();
 		//double ReadDouble();

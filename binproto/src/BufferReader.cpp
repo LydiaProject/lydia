@@ -113,10 +113,10 @@ namespace binproto {
 		return reinterpret_cast<std::int64_t&>(v);
 	}
 
-	BufferReader::LengthType BufferReader::ReadLength() {
+	BufferReader::LengthType BufferReader::ReadLength(std::size_t elem_size) {
 		auto length = ReadUint32();
 		// Check if we can actually read that many bytes from the buffer here too
-		BoundsCheck((std::size_t)length * sizeof(std::uint8_t));
+		BoundsCheck((static_cast<std::size_t>(length) * elem_size) * sizeof(std::uint8_t));
 		return length;
 	}
 
