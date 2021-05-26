@@ -30,7 +30,7 @@ namespace binproto {
 				elem.Write(writer);
 		}
 
-		std::vector<T> GetUnderlying() {
+		std::vector<T>& GetUnderlying() {
 			return array_;
 		}
 
