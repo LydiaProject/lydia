@@ -2,7 +2,7 @@
 
 namespace binproto {
 
-	std::vector<std::uint8_t> ByteArray::GetUnderlying() {
+	std::vector<std::uint8_t>& ByteArray::GetUnderlying() {
 		return data;
 	}
 

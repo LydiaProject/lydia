@@ -8,8 +8,7 @@
 namespace binproto {
 
 	/**
-	 * Represents a optional field, which may or
-	 * may not exist in a Readable<> or Message payload.
+	 * Represents an array of objects.
 	 */
 	template <class T>
 	requires(Readable<T>&& Writable<T>) struct Array {
@@ -45,7 +44,7 @@ namespace binproto {
 	 */
 	struct ByteArray {
 
-		std::vector<std::uint8_t> GetUnderlying();
+		std::vector<std::uint8_t>& GetUnderlying();
 
 		bool Read(binproto::BufferReader& reader);
 		void Write(binproto::BufferWriter& writer) const;
