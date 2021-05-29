@@ -11,10 +11,14 @@ namespace binproto {
 
 	/**
 	 * Represents a optional field, which may or
-	 * may not exist in a Readable<> or Message payload.
+	 * may not exist in a Readable or Message payload.
+	 *
+	 * I know this misses some features from the native std::optional<T> type,
+	 * however, this is really only meant to be a nicety type and Lydia only
+	 * needs the niceties here.
 	 */
 	template <class T>
-	requires(Readable<T>&& Writable<T>) struct Optional {
+	requires(Readable<T>&& Writable<T>) alignas(T) struct Optional {
 		void operator=(const T& value) {
 			if(!has_value)
 				has_value = true;
@@ -34,9 +38,11 @@ namespace binproto {
 			}
 		}
 
-		// TODO operator= for Optional&
-		// if other does not have a value, don't bother,
-		// otherwise do similar behaviour(or even invoke = for const T&)
+		void operator=(const Optional& other) {
+			if(other.HasValue()) {
+				this = *other.GetPtr();
+			}
+		}
 
 		/**
 		 * Get if this Optional has a stored value
@@ -83,7 +89,7 @@ namespace binproto {
 		}
 
 		bool has_value = false;
-		alignas(T) std::uint8_t data[sizeof(T)];
+		std::uint8_t data[sizeof(T)];
 	};
 } // namespace binproto
 

@@ -14,12 +14,12 @@ namespace lydia::messages {
 	 * List message. Has no payload data of importance, besides
 	 * the type id.
 	 */
-	struct ListMessage : public MessageWithNoPayload<0x1> {};
+	struct ListMessage : public MessageWithNoPayload<MessageTypeID::List> {};
 
 	/**
 	 * The response to a ListMessage.
 	 */
-	struct ListResponse : public LydiaMessageConfig<0x1, ListResponse> {
+	struct ListResponse : public LydiaMessageConfig<MessageTypeID::List, ListResponse> {
 
 		binproto::Array<VMReference> nodes;
 

@@ -8,11 +8,10 @@ namespace binproto {
 
 	/**
 	 * Message wire header.
-	 * This does not change across message types.
 	 */
-	struct WireMessageHeader {
-		std::uint32_t magic;
-		std::uint8_t id;
+	struct MessageHeader {
+		std::uint32_t magic{};
+		std::uint8_t id{};
 
 		bool read = false;
 
@@ -44,7 +43,12 @@ namespace binproto {
 	};
 
 	/**
-	 * A message header.
+	 * A slightly high level message.
+	 *
+	 * Intended to be configured by a project-level using,
+	 * and inherited by the payload class.
+	 *
+	 * Implements both the Readable and Writable concepts.
 	 *
 	 * \tparam ID Message type code.
 	 * \tparam MAGIC Message magic.
@@ -56,10 +60,12 @@ namespace binproto {
 		using Magic_Const = std::integral_constant<decltype(MAGIC), MAGIC>;
 		using ID_Const = std::integral_constant<decltype(ID), ID>;
 
-		WireMessageHeader header { MAGIC, ID };
+		using PayloadType = Payload;
+
+		MessageHeader header { MAGIC, ID };
 
 		bool Read(binproto::BufferReader& reader) {
-			// The header can be read first by an application then verified
+			// The header can be read first by an application then verified.
 			if(!header.read) {
 				try {
 					if(!header.Read(reader))
@@ -69,13 +75,24 @@ namespace binproto {
 				}
 			}
 
+			// FIXME(lily): try this?
+			//  Might be wonky since it's not gonna resolve the payload type
+			//  but it should work since this class is what defines Magic_Const and ID_Const
+			//  if(!header.Is<decltype(*this)>())
+			//	    return false;
+
 			if(header.magic != MAGIC)
 				return false;
 
 			if(header.id != ID)
 				return false;
 
-			// This is kiiinda crusty.. but whatever
+
+			// This is kiiinda crusty.. but whatever.
+			// at least not *that* code duplicatey. I Guess.
+			// would be really nice if Payload could itself
+			// implement Readable and Writable.
+
 			try {
 				if(!CRTPHelper()->ReadPayload(reader))
 					return false;
@@ -94,10 +111,10 @@ namespace binproto {
 
 	   private:
 		/**
-		 * Retreive a pointer to the payload type.
+		 * Retrieve a pointer to the payload type.
 		 */
 		constexpr Payload* CRTPHelper() const {
-			return (Payload*)this;
+			return static_cast<Payload*>(this);
 		}
 	};
 
