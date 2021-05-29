@@ -14,6 +14,7 @@ namespace binproto {
 	requires(Readable<T>&& Writable<T>) struct Array {
 		bool Read(binproto::BufferReader& reader) {
 			auto len = reader.ReadLength();
+			// TODO assert that length is som
 			array_.resize(len);
 
 			for(auto i = 0; i < len; ++i)
@@ -38,12 +39,10 @@ namespace binproto {
 		std::vector<T> array_;
 	};
 
-
 	/**
 	 * A generic array of bytes (wrapping over ReadBytes() basically)
 	 */
 	struct ByteArray {
-
 		std::vector<std::uint8_t>& GetUnderlying();
 
 		bool Read(binproto::BufferReader& reader);

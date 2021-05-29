@@ -4,16 +4,18 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#include <binproto/Concepts.h>
 
 namespace binproto {
 
 	/**
-	 * Buffer writer, for writing wire format types to a buffer.
+	 * Buffer writer, for writing wire format types & compound writables to a buffer.
 	 */
 	struct BufferWriter {
 		/**
-		 * Constructor. Also grows to a given size immediately.
-		 * \param starting_size Starting size of the buffer
+		 * Constructor which grows to a given size immediately.
+		 *
+		 * \param starting_size Starting size of the buffer.
 		 */
 		explicit BufferWriter(std::size_t starting_size);
 
@@ -40,6 +42,16 @@ namespace binproto {
 
 		void WriteString(const std::string_view& string);
 		void WriteBytes(const std::vector<std::uint8_t>& bytes);
+
+		/**
+		 * Shorthand to write a message or other Writable type.
+		 *
+		 * \param[in] message Message to write.
+		 */
+		template<Writable T>
+		void WriteMessage(const T& message) {
+			message.Write(*this);
+		}
 
 	   private:
 		void Grow(std::size_t grow_by);

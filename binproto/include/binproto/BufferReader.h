@@ -1,13 +1,11 @@
-//
-// Created by lily on 4/28/2021.
-//
-
 #ifndef BINPROTO_BUFFERREADER_H
 #define BINPROTO_BUFFERREADER_H
 
 #include <cstdint>
 #include <string>
 #include <vector>
+
+#include <binproto/Concepts.h>
 
 namespace binproto {
 
@@ -20,16 +18,23 @@ namespace binproto {
 		 */
 		using LengthType = std::uint32_t;
 
-		BufferReader(const std::uint8_t* buffer, std::size_t buffer_size);
+		/** Default-ctor so it can just be in a codec class in user code */
+		BufferReader();
 
-		// FIXME: Document the API, since it's kinda public
+		explicit BufferReader(const std::vector<std::uint8_t>& buf);
 
-		// TODO: provide a Init routine to load in a buffer, so the same Reader and Writer objects can be used to read lots of buffers in
+
+		/**
+		 * Load a buffer into this object so it can be re-used to load lots of buffers.
+		 * \param[in] buf A buffer to load.
+		 */
+		void LoadBuffer(const std::vector<std::uint8_t>& buf);
 
 		/**
 		 * Completely rewind the buffer back to the start.
 		 */
 		void Rewind();
+
 
 		std::uint8_t ReadByte();
 
@@ -54,6 +59,25 @@ namespace binproto {
 
 		std::string ReadString();
 		std::vector<std::uint8_t> ReadBytes();
+
+		/**
+ 		 * Shorthand to read a message or other Readable type.
+ 		 *
+		 * \tparam T The message type to read. Must be Readable.
+ 		 * \param[out] message Message to read.
+		 *
+		 * \return True on success, false otherwise.
+ 		 */
+		template<Readable T>
+		bool ReadMessage(T& message) {
+			try {
+				if(!message.Read(*this))
+					return false;
+			} catch(std::exception& ex) {
+				return false;
+			}
+			return true;
+		}
 
 	   private:
 		/**

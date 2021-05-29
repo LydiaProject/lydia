@@ -15,23 +15,11 @@ namespace {
 
 		const char* what() const noexcept override {
 			thread_local static char buf[256];
-			std::size_t index {};
-
 			memset(&buf[0], 0, sizeof(buf));
 
-			// This is a *really* beyond ugly hack,
-			// but we don't need to format the majority of this buffer except for one item
-			// ... so it works well enough. Perhaps if this gets rewritten to show more info, this will be removed?
+			// TODO: this message should change if we're throwing this during BufferReader::ReadLength()
 
-#define MEMCPY_STRING(str)                            \
-	memcpy(&buf[index], (void*)str, sizeof(str) - 1); \
-	index += sizeof(str) - 1
-
-			MEMCPY_STRING("Attempted to overrun the buffer trying to read ");
-			index += sprintf(&buf[index], "%llu", size_);
-			MEMCPY_STRING(" bytes of data");
-
-#undef MEMCPY_STRING
+			sprintf(&buf[0], "Attempted to overrun the buffer trying to read %llu bytes of data", size_);
 
 			return &buf[0];
 		}
@@ -47,10 +35,18 @@ namespace {
 
 namespace binproto {
 
-	BufferReader::BufferReader(const std::uint8_t* buffer, std::size_t buffer_size)
-		: begin(buffer),
-		  end(buffer + buffer_size),
-		  cur(buffer) {
+	BufferReader::BufferReader() {
+
+	}
+
+	BufferReader::BufferReader(const std::vector<std::uint8_t>& buf) {
+		LoadBuffer(buf);
+	}
+
+	void BufferReader::LoadBuffer(const std::vector<std::uint8_t>& buf) {
+		begin = buf.data();
+		end = begin + buf.size();
+		cur = begin;
 	}
 
 	void BufferReader::BoundsCheck(std::size_t size) const {
@@ -115,8 +111,11 @@ namespace binproto {
 
 	BufferReader::LengthType BufferReader::ReadLength(std::size_t elem_size) {
 		auto length = ReadUint32();
-		// Check if we can actually read that many bytes from the buffer here too
-		BoundsCheck((static_cast<std::size_t>(length) * elem_size) * sizeof(std::uint8_t));
+
+		// Check if we can actually read that many bytes from the buffer.
+		// If we can't, a overrun will be thrown.
+
+		BoundsCheck((static_cast<std::size_t>(length) * elem_size));
 		return length;
 	}
 
@@ -135,11 +134,16 @@ namespace binproto {
 	 */
 
 	std::string BufferReader::ReadString() {
-		// We internally serialize strings ala
-		// struct {
+		// BufferWriter serializes strings like the given structure:
+		//
+		// struct WireString {
 		//  BufferReader::LengthType length;
-		//  char str[length]; // NO \0!!!!!!!!!!
+		//  char str[length]; // NO \0! \0 BAD!
 		// };
+		//
+		// AKA: it uses Pascal strings. Because that's the only good thing about
+		// the pile of Chanticleer Hegemony Pascal is.
+
 		auto len = ReadLength();
 
 		std::string str;
@@ -150,11 +154,16 @@ namespace binproto {
 		memcpy(&str[0], cur, len);
 		cur += len;
 
+		// One thing we might see about doing is adding a ReadUTF8String() primitive which verifies that
+		// the string is actually UTF-8. For now, we don't do anything like that.
+		// Would be nice though.
+
 		return str;
 	}
 
 	std::vector<std::uint8_t> BufferReader::ReadBytes() {
-		// We store byte[] the same way as above.
+		// We store raw byte arrays the same as above.
+
 		auto len = ReadLength();
 		std::vector<std::uint8_t> vector;
 

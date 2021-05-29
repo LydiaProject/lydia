@@ -1,7 +1,3 @@
-//
-// Created by lily on 5/1/2021.
-//
-
 #ifndef BINPROTO_MESSAGE_H
 #define BINPROTO_MESSAGE_H
 
