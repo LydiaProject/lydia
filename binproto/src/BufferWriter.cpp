@@ -45,7 +45,7 @@ namespace binproto {
 	}
 
 	void BufferWriter::WriteInt16(std::int16_t val) {
-		WriteUint16(reinterpret_cast<std::uint16_t&>(val));
+		WriteUint16(*reinterpret_cast<std::uint16_t*>(&val));
 	}
 
 	void BufferWriter::WriteUint32(std::uint32_t val) {
@@ -58,7 +58,7 @@ namespace binproto {
 	}
 
 	void BufferWriter::WriteInt32(std::int32_t val) {
-		WriteUint32(reinterpret_cast<std::uint32_t&>(val));
+		WriteUint32(*reinterpret_cast<std::uint32_t*>(&val));
 	}
 
 	void BufferWriter::WriteUint64(std::uint64_t val) {
@@ -71,7 +71,7 @@ namespace binproto {
 	}
 
 	void BufferWriter::WriteInt64(std::int64_t val) {
-		WriteUint64(reinterpret_cast<std::uint64_t&>(val));
+		WriteUint64(*reinterpret_cast<std::uint64_t*>(&val));
 	}
 
 	void BufferWriter::WriteString(const std::string_view& string) {
