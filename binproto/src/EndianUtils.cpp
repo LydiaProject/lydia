@@ -53,12 +53,12 @@ namespace {
 	}
 
 	template <class T>
-	constexpr T& PtrAs(void* ptr) {
+	constexpr T& PointerTo(void* ptr) {
 		return *static_cast<T*>(ptr);
 	}
 
 	template <class T>
-	constexpr T& PtrAs(const void* ptr) requires(std::is_const_v<T>) {
+	constexpr T& PointerTo(const void* ptr) requires(std::is_const_v<T>) {
 		// Same as above PtrAs, but only participates in overload
 		// resolution for const types.
 		return *static_cast<T*>(ptr);
@@ -70,37 +70,37 @@ namespace binproto::internal {
 
 	template <>
 	std::uint16_t ReadBE<std::uint16_t>(const std::uint8_t* base) {
-		const auto& i = PtrAs<const std::uint16_t>(base);
+		const auto& i = PointerTo<const std::uint16_t>(base);
 		return SwapIfLE<std::uint16_t>(i);
 	}
 
 	template <>
 	void WriteBE<std::uint16_t>(std::uint8_t* base, const std::uint16_t& val) {
-		auto& i = PtrAs<std::uint16_t>(base);
+		auto& i = PointerTo<std::uint16_t>(base);
 		i = SwapIfLE<std::uint16_t>(val);
 	}
 
 	template <>
 	std::uint32_t ReadBE<std::uint32_t>(const std::uint8_t* base) {
-		const auto& i = PtrAs<const std::uint32_t>(base);
+		const auto& i = PointerTo<const std::uint32_t>(base);
 		return SwapIfLE<std::uint32_t>(i);
 	}
 
 	template <>
 	void WriteBE<std::uint32_t>(std::uint8_t* base, const std::uint32_t& val) {
-		auto& i = PtrAs<std::uint32_t>(base);
+		auto& i = PointerTo<std::uint32_t>(base);
 		i = SwapIfLE<std::uint32_t>(val);
 	}
 
 	template <>
 	std::uint64_t ReadBE<std::uint64_t>(const std::uint8_t* base) {
-		const auto& i = PtrAs<const std::uint64_t>(base);
+		const auto& i = PointerTo<const std::uint64_t>(base);
 		return SwapIfLE<std::uint64_t>(i);
 	}
 
 	template <>
 	void WriteBE<std::uint64_t>(std::uint8_t* base, const std::uint64_t& val) {
-		auto& i = PtrAs<std::uint64_t>(base);
+		auto& i = PointerTo<std::uint64_t>(base);
 		i = SwapIfLE<std::uint64_t>(val);
 	}
 
