@@ -6,6 +6,7 @@
 #include <binproto/Concepts.h>
 
 #include <cassert>
+#include <cstring>
 
 namespace binproto {
 
@@ -18,15 +19,15 @@ namespace binproto {
 	 * needs the niceties here.
 	 */
 	template <class T>
-	requires(Readable<T>&& Writable<T>) alignas(T) struct Optional {
-		void operator=(const T& value) {
+	requires(Readable<T>&& Writable<T>) struct Optional {
+		Optional& operator=(const T& value) {
 			if(!has_value)
 				has_value = true;
 
-			// We don't have to do any funky stuff with
+			// We don't do any funky stuff with
 			// the BufferWriter or anything,
-			// since this class stores device endian data.
-			// Only once it's been written is it made BE.
+			// since this class doesn't store wire data.
+			// Only once it's been written is it wire-ivied.
 
 			if constexpr(std::is_trivial_v<T>) {
 				std::memcpy(&data[0], (void*)&value, sizeof(T));
@@ -36,12 +37,19 @@ namespace binproto {
 				// We might be able to elide it anyways?
 				new(GetPtr()) T(value);
 			}
+
+			return *this;
 		}
 
-		void operator=(const Optional& other) {
+		Optional& operator=(const Optional& other) {
+			// handle self-assignment by not doing anything
+			if(&other == this)
+				return *this;
+
 			if(other.HasValue()) {
 				this = *other.GetPtr();
 			}
+			return *this;
 		}
 
 		/**
@@ -66,7 +74,7 @@ namespace binproto {
 		bool Read(binproto::BufferReader& reader) {
 			has_value = reader.ReadByte();
 
-			// doesn't have a value
+			// doesn't have a value, so we just return true.
 			if(!has_value)
 				return true;
 
@@ -76,6 +84,7 @@ namespace binproto {
 		void Write(binproto::BufferWriter& writer) const {
 			writer.WriteByte(HasValue());
 
+			// If we have a value, then we should write it!
 			if(HasValue())
 				GetPtr()->Write(writer);
 		}
@@ -85,11 +94,15 @@ namespace binproto {
 		 * Get a pointer to the internal optional buffer as a T*.
 		 */
 		T* GetPtr() {
-			return static_cast<T*>(&data[0]);
+			return reinterpret_cast<T*>(&data[0]);
+		}
+
+		const T* GetPtr() const {
+			return reinterpret_cast<const T*>(&data[0]);
 		}
 
 		bool has_value = false;
-		std::uint8_t data[sizeof(T)];
+		alignas(T) std::uint8_t data[sizeof(T)]{};
 	};
 } // namespace binproto
 

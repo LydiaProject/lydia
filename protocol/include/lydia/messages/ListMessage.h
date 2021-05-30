@@ -23,15 +23,8 @@ namespace lydia::messages {
 
 		binproto::Array<VMReference> nodes;
 
-		bool ReadPayload(binproto::BufferReader& reader) {
-			if(!nodes.Read(reader))
-				return false;
-			return true;
-		}
-
-		void WritePayload(binproto::BufferWriter& writer) {
-			nodes.Write(writer);
-		}
+		bool ReadPayload(binproto::BufferReader& reader);
+		void WritePayload(binproto::BufferWriter& writer) const;
 	};
 
 }

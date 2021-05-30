@@ -11,8 +11,8 @@ namespace lydia::messages {
 	enum class MessageTypeID : std::uint8_t {
 		Connect,
 		List,
-		Addusers,
-		Remusers,
+		AddUsers,
+		RemUsers,
 		Key,
 		Mouse,
 		Turn
@@ -40,7 +40,37 @@ namespace lydia::messages {
 		}
 	};
 
+	/**
+	 * A wrapper over std::string which makes it
+	 * able to be Readable and Writable.
+	 */
+	struct ReadableString {
 
+		ReadableString& operator=(const std::string& other) {
+			underlying_ = other;
+			return *this;
+		}
+
+		std::string& Get() {
+			return underlying_;
+		}
+
+		explicit operator std::string&() {
+			return Get();
+		}
+
+		bool Read(binproto::BufferReader& reader) {
+			underlying_ = reader.ReadString();
+			return true;
+		}
+
+		void Write(binproto::BufferWriter& writer) const {
+			writer.WriteString(underlying_);
+		}
+
+	   private:
+		std::string underlying_;
+	};
 
 }
 

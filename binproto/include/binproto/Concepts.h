@@ -8,10 +8,11 @@ namespace binproto {
 
 	/**
 	 * This concept constrains to types that are readable via a BufferReader.
+	 * Ideally speaking, a Readable object should also implement Writable for protocol usage.
 	 *
 	 * In exemplar form, this would be
 	 * \code
-	 * 	class AReadableObject {
+	 * 	class ReadableObject {
 	 * 	public:
 	 * 		bool Read(BufferReader& reader) {
 	 * 			// Read some values!
@@ -30,7 +31,7 @@ namespace binproto {
 	 *
 	 * In exemplar form, this would be
 	 * \code
-	 * 	class AWritableObject {
+	 * 	class WritableObject {
 	 * 	public:
 	 * 		void Write(BufferWriter& writer) const {
 	 * 			// Write some values!

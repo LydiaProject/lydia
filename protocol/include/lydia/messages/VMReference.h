@@ -9,8 +9,6 @@
 
 namespace lydia::messages {
 
-	//TODO: seperate .cpp TU for VMDescription and VMReference
-
 	/**
 	 * The description fields of a VM. May be left unused by a frontend
 	 */
@@ -80,36 +78,9 @@ namespace lydia::messages {
 		 */
 		bool Official;
 
-		bool Read(binproto::BufferReader& reader) {
-			name = reader.ReadString();
-			description = reader.ReadString();
-			motd = reader.ReadString();
-			hypervisor = static_cast<Hypervisor>(reader.ReadByte());
-			VCPUCount = reader.ReadByte();
+		bool Read(binproto::BufferReader& reader);
 
-			// possible maybedo: calculate best unit here?? idk
-			RamSize = reader.ReadUint64();
-			DiskSize = reader.ReadUint64();
-			Legacy = reader.ReadByte();
-			FileUploads = reader.ReadByte();
-			Official = reader.ReadByte();
-
-			return true;
-		}
-
-
-		void Write(binproto::BufferWriter& writer) const {
-			writer.WriteString(name);
-			writer.WriteString(description);
-			writer.WriteString(motd);
-			writer.WriteByte(static_cast<std::uint8_t>(hypervisor));
-			writer.WriteByte(VCPUCount);
-			writer.WriteUint64(RamSize);
-			writer.WriteUint64(DiskSize);
-			writer.WriteByte(Legacy);
-			writer.WriteByte(FileUploads);
-			writer.WriteByte(Official);
-		}
+		void Write(binproto::BufferWriter& writer) const;
 
 	};
 
@@ -133,25 +104,8 @@ namespace lydia::messages {
 		 */
 		binproto::Optional<binproto::ByteArray> preview_image;
 
-		bool Read(binproto::BufferReader& reader) {
-			id = reader.ReadString();
-
-			if(!description.Read(reader))
-					return false;
-
-			if(!preview_image.Read(reader))
-				return false;
-
-			return true;
-		}
-
-		void Write(binproto::BufferWriter& writer) const  {
-			writer.WriteString(id);
-
-			description.Write(writer);
-			preview_image.Write(writer);
-		}
-
+		bool Read(binproto::BufferReader& reader);
+		void Write(binproto::BufferWriter& writer) const;
 	};
 
 

@@ -10,8 +10,8 @@ namespace binproto {
 	 * Message wire header.
 	 */
 	struct MessageHeader {
-		std::uint32_t magic{};
-		std::uint8_t id{};
+		std::uint32_t magic {};
+		std::uint8_t id {};
 
 		bool read = false;
 
@@ -75,23 +75,14 @@ namespace binproto {
 				}
 			}
 
-			// FIXME(lily): try this?
-			//  Might be wonky since it's not gonna resolve the payload type
-			//  but it should work since this class is what defines Magic_Const and ID_Const
-			//  if(!header.Is<decltype(*this)>())
-			//	    return false;
-
-			if(header.magic != MAGIC)
+			if(!header.Is<decltype(this)::Payload>())
 				return false;
-
-			if(header.id != ID)
-				return false;
-
 
 			// This is kiiinda crusty.. but whatever.
 			// at least not *that* code duplicatey. I Guess.
-			// would be really nice if Payload could itself
-			// implement Readable and Writable.
+			// It would be really nice if Payload could itself
+			// directly implement Readable and Writable, instead
+			// of this. But it works. And that's what matters.
 
 			try {
 				if(!CRTPHelper()->ReadPayload(reader))
@@ -104,8 +95,6 @@ namespace binproto {
 
 		void Write(binproto::BufferWriter& writer) const {
 			header.Write(writer);
-
-			// call the payload write function
 			CRTPHelper()->WritePayload(writer);
 		}
 
