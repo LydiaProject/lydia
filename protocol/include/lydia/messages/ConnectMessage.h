@@ -5,14 +5,14 @@
 
 namespace lydia::messages {
 
-	struct ConnectMessage : public LydiaMessageConfig<MessageTypeID::Connect, ConnectMessage> {
+	struct ConnectMessage : public LydiaMessage<MessageTypeID::Connect, ConnectMessage> {
 		std::string vm;
 
 		bool ReadPayload(binproto::BufferReader& reader);
 		void WritePayload(binproto::BufferWriter& writer) const;
 	};
 
-	struct ConnectResponse : public LydiaMessageConfig<MessageTypeID::Connect, ConnectResponse> {
+	struct ConnectResponse : public LydiaMessage<MessageTypeID::Connect, ConnectResponse> {
 		bool success;
 
 		bool ReadPayload(binproto::BufferReader& reader);

@@ -13,24 +13,26 @@ namespace lydia::messages {
 		List,
 		AddUsers,
 		RemUsers,
+		UserRename,
 		Key,
 		Mouse,
 		Turn
 	};
 
 	/**
-	 * The Lydia message configuration.
+	 * The Lydia protocol message configuration.
 	 */
 	template<MessageTypeID TypeID, class Payload>
-	using LydiaMessageConfig = binproto::Message<static_cast<std::uint8_t>(TypeID), 0x4C59444D, Payload>;
+	using LydiaMessage = binproto::Message<static_cast<std::uint8_t>(TypeID), 0x4C59444D, Payload>;
 
 	/**
 	 * Message with a given typeid that has no payload.
+	 *
 	 * This is intended to be inherited from for messages
 	 * that don't need to read payload (or ignore any sent.)
 	 */
 	template<MessageTypeID TypeID>
-	struct MessageWithNoPayload : public LydiaMessageConfig<TypeID, MessageWithNoPayload<TypeID>> {
+	struct MessageWithNoPayload : public LydiaMessage<TypeID, MessageWithNoPayload<TypeID>> {
 		bool ReadPayload(binproto::BufferReader& reader) {
 			return true;
 		}
@@ -41,13 +43,21 @@ namespace lydia::messages {
 	};
 
 	/**
-	 * A wrapper over std::string which makes it
-	 * able to be Readable and Writable.
+	 * A shim over std::string which makes it
+	 * fulfill the Readable and Writable concepts.
 	 */
 	struct ReadableString {
 
 		ReadableString& operator=(const std::string& other) {
 			underlying_ = other;
+			return *this;
+		}
+
+		ReadableString& operator=(const ReadableString& other) {
+			if(&other == this)
+				return *this;
+
+			underlying_ = other.underlying_;
 			return *this;
 		}
 

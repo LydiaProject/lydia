@@ -19,7 +19,7 @@ namespace lydia::messages {
 	/**
 	 * The response to a ListMessage.
 	 */
-	struct ListResponse : public LydiaMessageConfig<MessageTypeID::List, ListResponse> {
+	struct ListResponse : public LydiaMessage<MessageTypeID::List, ListResponse> {
 
 		binproto::Array<VMReference> nodes;
 

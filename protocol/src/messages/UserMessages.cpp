@@ -42,4 +42,37 @@ namespace lydia::messages {
 		writer.WriteMessage(users);
 	}
 
-}
+	bool UserRenameMessage::ReadPayload(binproto::BufferReader& reader) {
+		if(!reader.ReadMessage(new_name))
+			return false;
+
+		return true;
+	}
+
+	void UserRenameMessage::WritePayload(binproto::BufferWriter& writer) const {
+		writer.WriteMessage(new_name);
+	}
+
+	bool UserRenameResponse::ReadPayload(binproto::BufferReader& reader) {
+		result = static_cast<Result>(reader.ReadByte());
+		if(!reader.ReadMessage(new_name))
+			return false;
+		return true;
+	}
+
+	void UserRenameResponse::WritePayload(binproto::BufferWriter& writer) const {
+		writer.WriteByte(static_cast<std::uint8_t>(result));
+		writer.WriteMessage(new_name);
+	}
+
+	bool UserRenameBroadcast::ReadPayload(binproto::BufferReader& reader) {
+		if(!reader.ReadMessage(user))
+			return false;
+		return true;
+	}
+
+	void UserRenameBroadcast::WritePayload(binproto::BufferWriter& writer) const {
+		writer.WriteMessage(user);
+	}
+
+} // namespace lydia::messages
