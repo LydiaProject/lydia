@@ -33,10 +33,14 @@ namespace lydia::messages {
 	bool TurnServerMessage::ReadPayload(binproto::BufferReader& reader) {
 		if(!reader.ReadMessage(users))
 			return false;
+		turn_ms = reader.ReadUint32();
+		paused = reader.ReadByte();
 		return true;
 	}
 
 	void TurnServerMessage::WritePayload(binproto::BufferWriter& writer) const {
 		writer.WriteMessage(users);
+		writer.WriteUint32(turn_ms);
+		writer.WriteByte(paused);
 	}
 } // namespace lydia::messages

@@ -84,9 +84,11 @@ namespace lydia::messages {
 	};
 
 	/**
- 	 * This is a handy little thing to make bitset enums nicer.
+ 	 * This is a handy little thing to make bitflag enums nicer.
  	 * It'd be nice if the bit to set was a regular param...
  	 * clang complains about a "non const read" in the static_assert for some reason though.
+ 	 *
+ 	 * TODO: Put this in narwhal, along with strongly typed bitflag utilities
  	 */
 	template <class Enum, std::underlying_type_t<Enum> bit_to_set>
 	consteval std::underlying_type_t<Enum> bit() {
