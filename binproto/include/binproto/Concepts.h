@@ -46,6 +46,17 @@ namespace binproto {
 		{ t.Write(writer) } -> std::same_as<void>;
 	};
 
+	/**
+	 * This concept constrains to types that are usable as message payloads.
+	 * Ideally, message payloads could implement Readable and Writable themselves,
+	 * but they don't at the moment.
+	 */
+	template<class T>
+	concept MessagePayload = requires(T payload, BufferReader& reader, BufferWriter& writer) {
+		{ payload.ReadPayload(reader) } -> std::same_as<bool>;
+		{ payload.WritePayload(writer) } -> std::same_as<void>;
+	};
+
 } // namespace binproto
 
 #endif //BINPROTO_CONCEPTS_H

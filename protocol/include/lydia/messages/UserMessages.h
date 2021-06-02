@@ -7,7 +7,7 @@
 
 #include <binproto/Array.h>
 #include <binproto/Optional.h>
-#include <lydia/messages/LydiaConfig.h>
+#include <lydia/messages/LydiaMessage.h>
 
 namespace lydia::messages {
 
@@ -30,7 +30,7 @@ namespace lydia::messages {
 		void Write(binproto::BufferWriter& writer) const;
 	};
 
-	struct AddUsersMessage : public LydiaMessage<MessageTypeID::AddUsers, AddUsersMessage> {
+	struct AddUsersMessage : public Message<MessageTypeID::UserConnects, AddUsersMessage> {
 		/**
 		 * The users we are adding.
 		 * These references will have names attached to them
@@ -41,7 +41,7 @@ namespace lydia::messages {
 		void WritePayload(binproto::BufferWriter& writer) const;
 	};
 
-	struct RemUsersMessage : public LydiaMessage<MessageTypeID::RemUsers, RemUsersMessage> {
+	struct RemUsersMessage : public Message<MessageTypeID::UserDisconnect, RemUsersMessage> {
 		/**
 		 * The users we are removing.
 		 * These references won't have names attached to them.
@@ -55,7 +55,7 @@ namespace lydia::messages {
 	/**
 	 * A client to server rename message.
 	 */
-	struct UserRenameMessage : public LydiaMessage<MessageTypeID::UserRename, UserRenameMessage> {
+	struct UserRenameMessage : public Message<MessageTypeID::UserRename, UserRenameMessage> {
 		/**
 		 * The name this client wants to rename to.
 		 */
@@ -68,7 +68,7 @@ namespace lydia::messages {
 	/**
 	 * Sent to the client attempting to rename.
 	 */
-	struct UserRenameResponse : public LydiaMessage<MessageTypeID::UserRename, UserRenameResponse> {
+	struct UserRenameResponse : public Message<MessageTypeID::UserRename, UserRenameResponse> {
 		enum class Result : std::uint8_t {
 			Success,
 
@@ -103,7 +103,7 @@ namespace lydia::messages {
 	/**
 	 * Sent to all connected clients except the user renaming when a user successfully renames.
 	 */
-	struct UserRenameBroadcast : public LydiaMessage<MessageTypeID::UserRename, UserRenameBroadcast> {
+	struct UserRenameBroadcast : public Message<MessageTypeID::UserRename, UserRenameBroadcast> {
 		/**
 		 * The user renaming.
 		 * The username sent will be the new username.

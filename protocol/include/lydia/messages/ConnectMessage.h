@@ -1,19 +1,19 @@
 #ifndef LYDIA_PROTOCOL_CONNECTMESSAGE_H
 #define LYDIA_PROTOCOL_CONNECTMESSAGE_H
 
-#include <lydia/messages/LydiaConfig.h>
+#include <lydia/messages/LydiaMessage.h>
 
 namespace lydia::messages {
 
-	struct ConnectMessage : public LydiaMessage<MessageTypeID::Connect, ConnectMessage> {
+	struct ConnectMessage : public Message<MessageTypeID::Connect, ConnectMessage> {
 		std::string vm;
 
 		bool ReadPayload(binproto::BufferReader& reader);
 		void WritePayload(binproto::BufferWriter& writer) const;
 	};
 
-	struct ConnectResponse : public LydiaMessage<MessageTypeID::Connect, ConnectResponse> {
-		bool success;
+	struct ConnectResponse : public Message<MessageTypeID::Connect, ConnectResponse> {
+		bool success{};
 
 		bool ReadPayload(binproto::BufferReader& reader);
 		void WritePayload(binproto::BufferWriter& writer) const;

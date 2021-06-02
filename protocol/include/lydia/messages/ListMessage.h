@@ -5,7 +5,7 @@
 #ifndef LYDIA_PROTOCOL_LISTMESSAGE_H
 #define LYDIA_PROTOCOL_LISTMESSAGE_H
 
-#include <lydia/messages/LydiaConfig.h>
+#include <lydia/messages/LydiaMessage.h>
 #include <lydia/messages/VMReference.h>
 
 namespace lydia::messages {
@@ -19,7 +19,7 @@ namespace lydia::messages {
 	/**
 	 * The response to a ListMessage.
 	 */
-	struct ListResponse : public LydiaMessage<MessageTypeID::List, ListResponse> {
+	struct ListResponse : public Message<MessageTypeID::List, ListResponse> {
 
 		binproto::Array<VMReference> nodes;
 

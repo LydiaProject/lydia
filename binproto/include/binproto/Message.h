@@ -33,7 +33,7 @@ namespace binproto {
 		 *
 		 * \tparam Message The fully-defined message type to check.
 		 */
-		template <class Message>
+		template <MessagePayload Message>
 		[[nodiscard]] bool Is() const {
 			if(typename Message::Magic_Const() != magic)
 				return false;
@@ -43,7 +43,7 @@ namespace binproto {
 	};
 
 	/**
-	 * A slightly high level message.
+	 * A slightly higher level message primitive.
 	 *
 	 * Intended to be configured by a project-level using,
 	 * and inherited by the payload class.
@@ -52,7 +52,7 @@ namespace binproto {
 	 *
 	 * \tparam ID Message type code.
 	 * \tparam MAGIC Message magic.
-	 * \tparam Payload Inherited payload class.
+	 * \tparam Payload Inherited payload class. Must follow MessagePayload.
 	 */
 	template <std::uint8_t ID, std::uint32_t MAGIC, class Payload>
 	struct Message {

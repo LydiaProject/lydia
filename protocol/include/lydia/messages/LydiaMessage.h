@@ -11,34 +11,36 @@ namespace lydia::messages {
 	enum class MessageTypeID : std::uint8_t {
 		Connect,
 		List,
-		AddUsers,
-		RemUsers,
+		UserConnects,
+		UserDisconnect,
 		UserRename,
 		Key,
 		Mouse,
-		Turn
+		Turn,
+		ChatCreateWhisperChannel,
+		ChatDeleteWhisperChannel,
+		ChatMessage
 	};
 
 	/**
 	 * The Lydia protocol message configuration.
 	 */
-	template<MessageTypeID TypeID, class Payload>
-	using LydiaMessage = binproto::Message<static_cast<std::uint8_t>(TypeID), 0x4C59444D, Payload>;
+	template <MessageTypeID TypeID, class Payload>
+	using Message = binproto::Message<static_cast<std::uint8_t>(TypeID), 0x4C59444D, Payload>;
 
 	/**
 	 * Message with a given typeid that has no payload.
 	 *
 	 * This is intended to be inherited from for messages
-	 * that don't need to read payload (or ignore any sent.)
+	 * that don't need to read a payload (or ignore any sent.)
 	 */
-	template<MessageTypeID TypeID>
-	struct MessageWithNoPayload : public LydiaMessage<TypeID, MessageWithNoPayload<TypeID>> {
+	template <MessageTypeID TypeID>
+	struct MessageWithNoPayload : public Message<TypeID, MessageWithNoPayload<TypeID>> {
 		bool ReadPayload(binproto::BufferReader& reader) {
 			return true;
 		}
 
 		void WritePayload(binproto::BufferWriter& writer) const {
-
 		}
 	};
 
@@ -47,7 +49,6 @@ namespace lydia::messages {
 	 * fulfill the Readable and Writable concepts.
 	 */
 	struct ReadableString {
-
 		ReadableString& operator=(const std::string& other) {
 			underlying_ = other;
 			return *this;
@@ -82,6 +83,23 @@ namespace lydia::messages {
 		std::string underlying_;
 	};
 
-}
+	/**
+ 	 * This is a handy little thing to make bitset enums nicer.
+ 	 * It'd be nice if the bit to set was a regular param...
+ 	 * clang complains about a "non const read" in the static_assert for some reason though.
+ 	 */
+	template <class Enum, std::underlying_type_t<Enum> bit_to_set>
+	consteval std::underlying_type_t<Enum> bit() {
+		using Type = std::underlying_type_t<Enum>;
+		const auto BITS = (sizeof(Type) * CHAR_BIT);
+
+		// idiot check beforehand that the bit to set can be held
+		// inside of the underlying type of the enum
+		static_assert(bit_to_set <= BITS, "invalid bit for the underlying enum type");
+
+		return static_cast<Type>(1 << bit_to_set);
+	}
+
+} // namespace lydia::messages
 
 #endif //LYDIA_PROTOCOL_LYDIACONFIG_H

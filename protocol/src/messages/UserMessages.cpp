@@ -4,6 +4,7 @@
 
 #include <lydia/messages/UserMessages.h>
 
+
 namespace lydia::messages {
 
 	bool UserReference::Read(binproto::BufferReader& reader) {
