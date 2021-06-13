@@ -57,6 +57,30 @@ namespace binproto {
 		{ payload.WritePayload(writer) } -> std::same_as<void>;
 	};
 
+	/**
+	 * This concept constrains to types which are transformable (they have a template Transform member function)
+	 * Transformable will deprecate Readable and Writable.
+	 *
+	 * Exemplar of a transformable class:
+	 * \code
+	 *  class MyTransformable {
+	 *  	std::uint8_t byte;
+	 *  	binproto::ByteArray arr;
+	 *
+	 * 		// The stream can take a const ref for writing
+	 * 		// or a full reference for reading.
+	 *  	template<binproto::Stream Stream>
+	 *  	inline void Transform(Stream& stream) {
+	 *  		stream.Byte(byte);
+	 *  		stream.TransformMember(arr);
+	 *  	}
+	 *  };
+	 *
+	 * \endcode
+	 */
+	template<class T>
+	concept Transformable = true;
+
 } // namespace binproto
 
 #endif //BINPROTO_CONCEPTS_H

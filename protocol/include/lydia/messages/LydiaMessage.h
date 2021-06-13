@@ -16,9 +16,13 @@ namespace lydia::messages {
 		UserRename,
 		Key,
 		Mouse,
+		MouseMovement, // sent to other clients
+		MouseCursorUpdate,
 		Turn,
-		ChatCreateWhisperChannel,
-		ChatDeleteWhisperChannel,
+		TurnAdministration, // pause turns
+
+		ChatCreateWhisperChannel, // TODO
+		ChatDeleteWhisperChannel, // TODO
 		ChatMessage
 	};
 
@@ -83,24 +87,7 @@ namespace lydia::messages {
 		std::string underlying_;
 	};
 
-	/**
- 	 * This is a handy little thing to make bitflag enums nicer.
- 	 * It'd be nice if the bit to set was a regular param...
- 	 * clang complains about a "non const read" in the static_assert for some reason though.
- 	 *
- 	 * TODO: Put this in narwhal, along with strongly typed bitflag utilities
- 	 */
-	template <class Enum, std::underlying_type_t<Enum> bit_to_set>
-	consteval std::underlying_type_t<Enum> bit() {
-		using Type = std::underlying_type_t<Enum>;
-		const auto BITS = (sizeof(Type) * CHAR_BIT);
 
-		// idiot check beforehand that the bit to set can be held
-		// inside of the underlying type of the enum
-		static_assert(bit_to_set <= BITS, "invalid bit for the underlying enum type");
-
-		return static_cast<Type>(1 << bit_to_set);
-	}
 
 } // namespace lydia::messages
 

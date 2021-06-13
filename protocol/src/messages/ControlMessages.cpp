@@ -19,6 +19,8 @@ namespace lydia::messages {
 
 	bool MouseMessage::ReadPayload(binproto::BufferReader& reader) {
 		buttons = static_cast<MouseMessage::Buttons>(reader.ReadByte());
+
+
 		x = reader.ReadUint16();
 		y = reader.ReadUint16();
 		return true;
@@ -28,6 +30,28 @@ namespace lydia::messages {
 		writer.WriteByte(static_cast<std::uint8_t>(buttons));
 		writer.WriteUint16(x);
 		writer.WriteUint16(y);
+	}
+
+	bool MouseMoveMessage::ReadPayload(binproto::BufferReader& reader) {
+		x = reader.ReadUint16();
+		y = reader.ReadUint16();
+		return true;
+	}
+
+	void MouseMoveMessage::WritePayload(binproto::BufferWriter& writer) const {
+		writer.WriteUint16(x);
+		writer.WriteUint16(y);
+	}
+
+	bool MouseCursorUpdateMessage::ReadPayload(binproto::BufferReader& reader) {
+		hidden = reader.ReadByte();
+		reader.ReadMessage(cursor_image);
+		return true;
+	}
+
+	void MouseCursorUpdateMessage::WritePayload(binproto::BufferWriter& writer) const {
+		writer.WriteByte(hidden);
+		writer.WriteMessage(cursor_image);
 	}
 
 	bool TurnServerMessage::ReadPayload(binproto::BufferReader& reader) {
