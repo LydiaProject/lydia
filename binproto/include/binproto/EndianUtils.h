@@ -122,9 +122,9 @@ namespace binproto::internal {
  	 * \return A value of type T in native endian.
  	 */
 	template <class T>
-	T ReadBE(const std::uint8_t* base) requires(detail::IsSwappable<std::remove_cvref_t<T>>) {
+	std::remove_cvref_t<T> ReadBE(const std::uint8_t* base) requires(detail::IsSwappable<std::remove_cvref_t<T>>) {
 		const auto& ref = detail::PointerTo<const std::remove_cvref_t<T>>(base);
-		return detail::SwapIfEndian<std::endian::little, T>(ref);
+		return detail::SwapIfEndian<std::endian::little, std::remove_cvref_t<T>>(ref);
 	}
 
 	/**
@@ -137,23 +137,23 @@ namespace binproto::internal {
 	 */
 	template <class T>
 	void WriteBE(std::uint8_t* base, const T& val) requires(detail::IsSwappable<std::remove_cvref_t<T>>) {
-		auto& i = detail::PointerTo<T>(base);
-		i = detail::SwapIfEndian<std::endian::little, T>(val);
+		auto& i = detail::PointerTo<std::remove_cvref_t<T>>(base);
+		i = detail::SwapIfEndian<std::endian::little, std::remove_cvref_t<T>>(val);
 	}
 
 	// Not documented since they're not used in BinProto or Lydia,
 	// but feel free to yoink these
 
 	template <class T>
-	T ReadLE(const std::uint8_t* base) requires(detail::IsSwappable<std::remove_cvref_t<T>>) {
+	std::remove_cvref_t<T> ReadLE(const std::uint8_t* base) requires(detail::IsSwappable<std::remove_cvref_t<T>>) {
 		const auto& ref = detail::PointerTo<const std::remove_cvref_t<T>>(base);
-		return detail::SwapIfEndian<std::endian::big, T>(ref);
+		return detail::SwapIfEndian<std::endian::big, std::remove_cvref_t<T>>(ref);
 	}
 
 	template <class T>
 	void WriteLE(std::uint8_t* base, const T& val) requires(detail::IsSwappable<std::remove_cvref_t<T>>) {
-		auto& i = detail::PointerTo<T>(base);
-		i = detail::SwapIfEndian<std::endian::big, T>(val);
+		auto& i = detail::PointerTo<std::remove_cvref_t<T>>(base);
+		i = detail::SwapIfEndian<std::endian::big, std::remove_cvref_t<T>>(val);
 	}
 
 } // namespace binproto::internal
