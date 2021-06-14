@@ -122,11 +122,7 @@ namespace binproto::internal {
 	/**
  	 * Read a big endian value from a buffer.
  	 *
- 	 * \tparam T The type to read. Must be one of the following, otherwise linker errors will happen:
- 	 * 			- std::uint16_t
- 	 * 			- std::uint32_t
- 	 * 			- std::uint64_t
- 	 *
+ 	 * \tparam T The type to read.
  	 * \param[in] base Pointer to buffer to read value in.
  	 * \return A value of type T in native endian.
  	 */
@@ -139,10 +135,7 @@ namespace binproto::internal {
 	/**
 	 * Write a big endian value to a buffer.
 	 *
-	 * \tparam T The type to write. Must be one of the following, otherwise linker errors will happen:
-	 * 			- std::uint16_t
-	 * 			- std::uint32_t
-	 * 			- std::uint64_t
+	 * \tparam T The type to write.
 	 *
 	 * \param[out] base Pointer to buffer to write value to.
 	 * \param[in] val The value to write.
