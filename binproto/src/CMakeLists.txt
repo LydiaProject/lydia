@@ -1,7 +1,6 @@
 set(CMAKE_CXX_STANDARD 20)
 
 add_library(binproto
-		EndianUtils.cpp
 		Array.cpp
 		BufferReader.cpp
 		BufferWriter.cpp
