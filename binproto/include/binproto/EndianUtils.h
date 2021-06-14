@@ -83,20 +83,15 @@ namespace binproto::internal {
 			}
 		}
 
-		template <class T>
-		constexpr T SwapIfLE(const T& val) requires(IsSwappable<T>) {
-			if constexpr(std::endian::native == std::endian::little) // NOLINT (we intentionally use this)
-				return Swap(val);
-			else
-				return val;
-		}
+		template<std::endian Endian, class T>
+		constexpr T SwapIfEndian(const T& val) requires(IsSwappable<T>) {
+			// TODO: If on Emscripten, we'll unfortunately need to do some endian
+			//       checks *at runtime*. Thankfully, those can be made statics.
+			//       On normal compiles of the Lydia codebase, this is fine.
 
-		template <class T>
-		constexpr T SwapIfBE(const T& val) requires(IsSwappable<T>) {
-			if constexpr(std::endian::native == std::endian::big) // NOLINT (we intentionally use this)
+			if constexpr(std::endian::native == Endian)
 				return Swap(val);
-			else
-				return val;
+			return val;
 		}
 
 		/**
@@ -129,7 +124,7 @@ namespace binproto::internal {
 	template <class T>
 	T ReadBE(const std::uint8_t* base) requires(detail::IsSwappable<std::remove_cvref_t<T>>) {
 		const auto& ref = detail::PointerTo<const std::remove_cvref_t<T>>(base);
-		return detail::SwapIfLE<T>(ref);
+		return detail::SwapIfEndian<std::endian::little, T>(ref);
 	}
 
 	/**
@@ -143,7 +138,7 @@ namespace binproto::internal {
 	template <class T>
 	void WriteBE(std::uint8_t* base, const T& val) requires(detail::IsSwappable<std::remove_cvref_t<T>>) {
 		auto& i = detail::PointerTo<T>(base);
-		i = detail::SwapIfLE<T>(val);
+		i = detail::SwapIfEndian<std::endian::little, T>(val);
 	}
 
 	// Not documented since they're not used in BinProto or Lydia,
@@ -152,13 +147,13 @@ namespace binproto::internal {
 	template <class T>
 	T ReadLE(const std::uint8_t* base) requires(detail::IsSwappable<std::remove_cvref_t<T>>) {
 		const auto& ref = detail::PointerTo<const std::remove_cvref_t<T>>(base);
-		return detail::SwapIfBE<std::remove_cvref_t<T>>(ref);
+		return detail::SwapIfEndian<std::endian::big, T>(ref);
 	}
 
 	template <class T>
 	void WriteLE(std::uint8_t* base, const T& val) requires(detail::IsSwappable<std::remove_cvref_t<T>>) {
 		auto& i = detail::PointerTo<T>(base);
-		i = detail::SwapIfBE<T>(val);
+		i = detail::SwapIfEndian<std::endian::big, T>(val);
 	}
 
 } // namespace binproto::internal
