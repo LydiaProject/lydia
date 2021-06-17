@@ -83,13 +83,17 @@ namespace binproto::internal {
 			}
 		}
 
-		template<std::endian Endian, class T>
-		constexpr T SwapIfEndian(const T& val) requires(IsSwappable<T>) {
-			// TODO: If on Emscripten, we'll unfortunately need to do some endian
-			//       checks *at runtime*. Thankfully, those can be made statics.
-			//       On normal compiles of the Lydia codebase, this is fine.
 
+		template<std::endian Endian, class T>
+		inline T SwapIfEndian(const T& val) requires(IsSwappable<T>) {
+#ifdef __EMSCRIPTEN__
+			// If on Emscripten, we can safely assume we're little endian,
+			// as Emscripten enforces that and WebAssembly (our target platform)
+			// is inherently little endian even on big endian devices.
+			if constexpr(std::endian::little == Endian)
+#else
 			if constexpr(std::endian::native == Endian)
+#endif
 				return Swap(val);
 			return val;
 		}
@@ -104,11 +108,12 @@ namespace binproto::internal {
 
 		/**
 		 * Get a const reference as T to a const buffer.
+		 *
+		 * Is exactly the same as the above PointerTo, however
+		 * only participates in overload resolution if T is const.
 		 */
 		template <class T>
 		constexpr T& PointerTo(const void* ptr) requires(std::is_const_v<T>) {
-			// Same as above PointerTo, but only participates in overload
-			// resolution for const types.
 			return *static_cast<T*>(ptr);
 		}
 
@@ -136,7 +141,7 @@ namespace binproto::internal {
 	 * \param[in] val The value to write.
 	 */
 	template <class T>
-	void WriteBE(std::uint8_t* base, const T& val) requires(detail::IsSwappable<std::remove_cvref_t<T>>) {
+	void WriteBE(std::uint8_t* base, const std::remove_cvref_t<T>& val) requires(detail::IsSwappable<std::remove_cvref_t<T>>) {
 		auto& i = detail::PointerTo<std::remove_cvref_t<T>>(base);
 		i = detail::SwapIfEndian<std::endian::little, std::remove_cvref_t<T>>(val);
 	}
@@ -151,7 +156,7 @@ namespace binproto::internal {
 	}
 
 	template <class T>
-	void WriteLE(std::uint8_t* base, const T& val) requires(detail::IsSwappable<std::remove_cvref_t<T>>) {
+	void WriteLE(std::uint8_t* base, const std::remove_cvref_t<T>& val) requires(detail::IsSwappable<std::remove_cvref_t<T>>) {
 		auto& i = detail::PointerTo<std::remove_cvref_t<T>>(base);
 		i = detail::SwapIfEndian<std::endian::big, std::remove_cvref_t<T>>(val);
 	}

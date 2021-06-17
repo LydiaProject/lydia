@@ -47,13 +47,28 @@ namespace binproto {
 		begin = buf.data();
 		end = begin + buf.size();
 		cur = begin;
+#ifdef __EMSCRIPTEN__
+		// TODO: Reset internal value here
+#endif
 	}
 
 	void BufferReader::BoundsCheck(std::size_t size) const {
-		// If the current pointer + given size is over the end pointer,
+		// If the current pointer + given size to read is over the end pointer,
 		// that would be a overrun.
 		if((cur + size) > end)
+#ifdef __EMSCRIPTEN__
+		// On Emscripten with a optimization level past -O1, any exceptions act like
+		// -fno-exceptions was passed to the compiler command line (i.e, abort() calls)
+		// so we do this instead.
+		{
+			// TODO: Log in the JS console
+			// (and/or) rewind? That may be unintended behaviour
+			// and make this function non-const.
+			return;
+		}
+#else
 			throw BufferOverrun(size);
+#endif
 
 		// Otherwise it's OK!
 	}
@@ -149,14 +164,12 @@ namespace binproto {
 		std::string str;
 		str.resize(len);
 
-		//for(BufferReader::LengthType i = 0; i < len; ++i)
-		//	str[i] = ReadByte();
 		memcpy(&str[0], cur, len);
 		cur += len;
 
 		// One thing we might see about doing is adding a ReadUTF8String() primitive which verifies that
 		// the string is actually UTF-8. For now, we don't do anything like that.
-		// Would be nice though.
+		// Would be nice though, and definitely will be added at some point.
 
 		return str;
 	}

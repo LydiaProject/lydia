@@ -2,8 +2,8 @@
 // Created by lily on 6/7/2021.
 //
 
-#ifndef LYDIA_ENUMBITFLAGUTILS_H
-#define LYDIA_ENUMBITFLAGUTILS_H
+#ifndef NARWHAL_ENUMBITFLAGUTILS_H
+#define NARWHAL_ENUMBITFLAGUTILS_H
 
 #include <type_traits>
 
@@ -73,4 +73,4 @@ namespace narwhal {
 
 } // namespace narwhal
 
-#endif //LYDIA_ENUMBITFLAGUTILS_H
+#endif //NARWHAL_ENUMBITFLAGUTILS_H

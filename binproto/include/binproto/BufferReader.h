@@ -70,12 +70,16 @@ namespace binproto {
  		 */
 		template<Readable T>
 		bool ReadMessage(T& message) {
+#ifndef __EMSCRIPTEN__
 			try {
+#endif
 				if(!message.Read(*this))
 					return false;
+#ifndef __EMSCRIPTEN__
 			} catch(std::exception& ex) {
 				return false;
 			}
+#endif
 			return true;
 		}
 

@@ -67,12 +67,8 @@ namespace binproto {
 		bool Read(binproto::BufferReader& reader) {
 			// The header can be read first by an application then verified.
 			if(!header.read) {
-				try {
-					if(!header.Read(reader))
-						return false;
-				} catch(std::exception& ex) {
+				if(!reader.ReadMessage(header))
 					return false;
-				}
 			}
 
 			if(!header.Is<decltype(this)::Payload>())
@@ -84,12 +80,16 @@ namespace binproto {
 			// directly implement Readable and Writable, instead
 			// of this. But it works. And that's what matters.
 
+#ifndef __EMSCRIPTEN__
 			try {
+#endif
 				if(!CRTPHelper()->ReadPayload(reader))
 					return false;
+#ifndef __EMSCRIPTEN__
 			} catch(std::exception& ex) {
 				return false;
 			}
+#endif
 			return true;
 		}
 

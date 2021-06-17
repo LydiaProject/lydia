@@ -69,29 +69,32 @@ namespace narwhal {
 		}
 
 	   private:
+
 		/**
 		 * Thread entry point.
 		 */
 		void ThreadEntry() {
+			// Hold a shared_ptr to this instance until ThreadEntry returns.
+			auto self = this->shared_from_this();
+
 			while(true) {
-				if(!should_run.load())
+				if(!self->should_run.load())
 					break;
 
-				auto self = this->shared_from_this();
 
-				while(data_queue.empty()) {
-					std::unique_lock<std::mutex> lock(mutex);
-					cond.wait(lock, [&self] {
+				while(self->data_queue.empty()) {
+					std::unique_lock<std::mutex> lock(self->mutex);
+					self->cond.wait(lock, [&self] {
 						// Continue waiting if we somehow got here when data is empty.
 						return !self->data_queue.empty();
 					});
 				}
 
-				std::shared_ptr<BaseData> data = data_queue.front();
-				data_queue.pop_front();
+				std::shared_ptr<BaseData> data = self->data_queue.front();
+				self->data_queue.pop_front();
 
 				if(!processor(data))
-					Stop();
+					self->Stop();
 			}
 		}
 
@@ -122,7 +125,7 @@ namespace narwhal {
 		std::condition_variable cond;
 
 		/**
-		 * Data queue.
+		 * The data queue.
 		 */
 		std::deque<std::shared_ptr<BaseData>> data_queue;
 	};
