@@ -19,7 +19,7 @@ namespace lydia::messages {
 		MouseMovement, // sent to other clients
 		MouseCursorUpdate,
 		Turn,
-		TurnAdministration, // pause turns
+		TurnAdministration, // pause turns, such
 
 		ChatCreateWhisperChannel, // TODO
 		ChatDeleteWhisperChannel, // TODO

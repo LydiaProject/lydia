@@ -6,6 +6,8 @@
 #define NARWHAL_ENUMBITFLAGUTILS_H
 
 #include <type_traits>
+#include <limits>
+#include <climits>
 
 namespace narwhal {
 	namespace detail {
