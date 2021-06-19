@@ -102,6 +102,16 @@ namespace binproto {
 			cur_index_ += string.length();
 		}
 
+		inline void Bytes(const std::vector<std::uint8_t>& vec) {
+			Uint32<std::endian::big>(vec.size());
+
+			if((cur_index_ + vec.size()) > buffer_.size())
+				Grow(vec.size());
+
+			memcpy(&buffer_[cur_index_], &vec[0], vec.size() * sizeof(std::uint8_t));
+			cur_index_ += vec.size();
+		}
+
 		template <class T>
 		constexpr void TransformOther(T& transformable) {
 			// TODO fix transformable

@@ -120,6 +120,20 @@ namespace binproto {
 			}
 		}
 
+		inline void Bytes(std::vector<std::uint8_t>& bytes) {
+			std::uint32_t length;
+			Uint32<std::endian::big>(length);
+
+			if(!HasError()) {
+				// TODO: check for a non-ridiculous size here.
+				if(!BoundCheck(length))
+					return;
+				bytes.resize(length);
+				memcpy(&bytes[0], cur, length * sizeof(std::uint8_t));
+				cur += length;
+			}
+		}
+
 		template<class T>
 		constexpr void TransformOther(T& transformable) {
 			transformable.Transform(*this);
