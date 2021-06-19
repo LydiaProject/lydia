@@ -146,7 +146,7 @@ namespace binproto::internal {
 		i = detail::SwapIfEndian<std::endian::little, std::remove_cvref_t<T>>(val);
 	}
 
-	// Not documented since they're not used in BinProto or Lydia,
+	// Not documented since they're not used in BinProto or Lydia (techinically they are now),
 	// but feel free to yoink these
 
 	template <class T>
@@ -160,6 +160,7 @@ namespace binproto::internal {
 		auto& i = detail::PointerTo<std::remove_cvref_t<T>>(base);
 		i = detail::SwapIfEndian<std::endian::big, std::remove_cvref_t<T>>(val);
 	}
+
 
 } // namespace binproto::internal
 

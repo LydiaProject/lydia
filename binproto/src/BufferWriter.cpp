@@ -1,9 +1,16 @@
 #include <binproto/BufferWriter.h>
 #include <binproto/EndianUtils.h>
 
+#include <binproto/ReadStream.h>
+#include <binproto/WriteStream.h>
+
 #include <cstring>
 
 namespace binproto {
+
+
+
+
 
 	BufferWriter::BufferWriter(std::size_t starting_size)
 		: cur_index_(0) {

@@ -11,7 +11,7 @@
 
 namespace lydia::messages {
 
-	struct KeyMessage : public Message<MessageTypeID::Key, KeyMessage> {
+	struct KeyMessage : public Message<MessageOpcode::Key, KeyMessage> {
 		/**
 		 * The keysym of the key that should be pressed or released.
 		 */
@@ -26,7 +26,7 @@ namespace lydia::messages {
 		void WritePayload(binproto::BufferWriter& writer) const;
 	};
 
-	struct MouseMessage : public Message<MessageTypeID::Mouse, MouseMessage> {
+	struct MouseMessage : public Message<MessageOpcode::Mouse, MouseMessage> {
 		/**
 		 * Mouse button bitflags.
 		 */
@@ -53,7 +53,7 @@ namespace lydia::messages {
 	 * Mouse cursor movement. Sent to other users
 	 * (since it's kind of pointless sending it to the mover)
 	 */
-	struct MouseMoveMessage : public Message<MessageTypeID::MouseMovement, MouseMoveMessage> {
+	struct MouseMoveMessage : public Message<MessageOpcode::MouseMovement, MouseMoveMessage> {
 		std::uint16_t x {};
 		std::uint16_t y {};
 
@@ -66,7 +66,7 @@ namespace lydia::messages {
 	 * with either a capable graphics adapter (for instance QEMU's QXL graphics adapter)
 	 * or the Agent.
 	 */
-	struct MouseCursorUpdateMessage : public Message<MessageTypeID::MouseCursorUpdate, MouseCursorUpdateMessage> {
+	struct MouseCursorUpdateMessage : public Message<MessageOpcode::MouseCursorUpdate, MouseCursorUpdateMessage> {
 		bool hidden; // Whether or not the cursor is hidden.
 
 		/**
@@ -79,7 +79,7 @@ namespace lydia::messages {
 		void WritePayload(binproto::BufferWriter& writer) const;
 	};
 
-	struct TurnServerMessage : public Message<MessageTypeID::Turn, TurnServerMessage> {
+	struct TurnServerMessage : public Message<MessageOpcode::Turn, TurnServerMessage> {
 		/**
 		 * The current turn queue.
 		 */
@@ -103,7 +103,7 @@ namespace lydia::messages {
 	/**
 	 * Sent by the client to indicate they want to take a turn.
 	 */
-	struct TurnClientMessage : public MessageWithNoPayload<MessageTypeID::Turn> {};
+	struct TurnClientMessage : public MessageWithNoPayload<MessageOpcode::Turn> {};
 
 	// TODO move
 

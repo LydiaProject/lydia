@@ -8,7 +8,7 @@ namespace lydia::messages {
 	/**
  	 * All message Type ID's.
  	 */
-	enum class MessageTypeID : std::uint8_t {
+	enum class MessageOpcode : std::uint8_t {
 		Connect,
 		List,
 		UserConnects,
@@ -29,17 +29,17 @@ namespace lydia::messages {
 	/**
 	 * The Lydia protocol message configuration.
 	 */
-	template <MessageTypeID TypeID, class Payload>
-	using Message = binproto::Message<static_cast<std::uint8_t>(TypeID), 0x4C59444D, Payload>;
+	template <MessageOpcode Opcode, class Payload>
+	using Message = binproto::Message<static_cast<std::uint8_t>(Opcode), 0x4C59444D, Payload>;
 
 	/**
-	 * Message with a given typeid that has no payload.
+	 * Message with a given opcode that has no payload.
 	 *
 	 * This is intended to be inherited from for messages
 	 * that don't need to read a payload (or ignore any sent.)
 	 */
-	template <MessageTypeID TypeID>
-	struct MessageWithNoPayload : public Message<TypeID, MessageWithNoPayload<TypeID>> {
+	template <MessageOpcode Opcode>
+	struct MessageWithNoPayload : public Message<Opcode, MessageWithNoPayload<Opcode>> {
 		bool ReadPayload(binproto::BufferReader& reader) {
 			return true;
 		}
