@@ -11,7 +11,7 @@ namespace binproto {
 	/**
 	 * Buffer writer, for writing wire format types & compound writables to a buffer.
 	 */
-	struct BufferWriter {
+	 struct [[deprecated("Use WriteStream instead")]] BufferWriter {
 		/**
 		 * Constructor which grows to a given size immediately.
 		 *

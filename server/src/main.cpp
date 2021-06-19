@@ -32,7 +32,6 @@ int main(int argc, char** argv) {
 
 	// let's see if we can read that test class back in from the writer,
 	// for a quick test.
-#if 0
 	reader.Load(buf);
 	t2.Transform<binproto::ReadStream>(reader);
 
@@ -42,9 +41,8 @@ int main(int argc, char** argv) {
 			std::cout << "t2.str == \"" << t2.str << "\", test passaronied\n";
 		}
 	}
-#endif
 
-	std::cout.write(reinterpret_cast<const char*>(&buf[0]), buf.size());
+	//std::cout.write(reinterpret_cast<const char*>(&buf[0]), buf.size());
 
 	return 0;
 }

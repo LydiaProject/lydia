@@ -112,6 +112,8 @@ namespace binproto {
 
 			if(!HasError()) {
 				// TODO: check for a non-ridiculous size here.
+				if(!BoundCheck(length))
+					return;
 				string.resize(length);
 				memcpy(&string[0], cur, length * sizeof(char));
 				cur += length;

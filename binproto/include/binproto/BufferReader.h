@@ -12,7 +12,7 @@ namespace binproto {
 	/**
 	 * A buffer reader.
 	 */
-	struct BufferReader {
+	struct [[deprecated("Use ReadStream")]] BufferReader {
 		/**
 		 * Type used for length storage.
 		 */
